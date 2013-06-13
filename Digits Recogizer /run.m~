@@ -1,0 +1,41 @@
+dataTrain=load('Data/trainsmall.csv');
+queryData=load('Data/testsmall.csv');
+disp(size(dataTrain));
+disp(size(queryData));
+
+K=20;
+dataMatrix=dataTrain;
+dataMatrix(:,1)=[];%delete first column
+disp(size(dataMatrix));
+[neighborIds neighborDistances] = kNearestNeighbors(dataMatrix, queryData, K);
+
+%disp(neighborIds);
+%disp(neighborDistances);
+
+disp(size(neighborIds));
+disp(size(neighborDistances));
+
+tests=size(queryData)(1,1);
+output=zeros(tests,1);
+for test=1:tests,
+	%get the maximum occured digit among K nearest points
+        count=zeros(10,1);
+        for k=1:K,
+            t=dataTrain(neighborIds(test,k),1)+1;%indexing shifted 1 represents 0 10 represents 9 
+	    count(t,1)+=1;
+        end;
+        maxx=0;
+        out=0;
+        for k=1:10,
+           if count(k,1)>maxx,
+              out=k;
+              maxx=count(k,1);
+           end;
+        end;
+        
+        output(test,1)=out-1;
+end;
+%disp(output);
+csvwrite("output.csv",output);
+
+        
